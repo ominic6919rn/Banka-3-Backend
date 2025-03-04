@@ -19,10 +19,7 @@ import rs.raf.bank_service.domain.enums.AccountOwnerType;
 import rs.raf.bank_service.domain.enums.AccountStatus;
 import rs.raf.bank_service.domain.enums.AccountType;
 import rs.raf.bank_service.domain.mapper.AccountMapper;
-import rs.raf.bank_service.exceptions.ClientNotAccountOwnerException;
-import rs.raf.bank_service.exceptions.ClientNotFoundException;
-import rs.raf.bank_service.exceptions.CurrencyNotFoundException;
-import rs.raf.bank_service.exceptions.UserNotAClientException;
+import rs.raf.bank_service.exceptions.*;
 import rs.raf.bank_service.repository.AccountRepository;
 import rs.raf.bank_service.repository.CurrencyRepository;
 import rs.raf.bank_service.specification.AccountSearchSpecification;
@@ -31,6 +28,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -153,7 +151,8 @@ public class AccountService {
     public AccountDetailsDto getAccountDetails(String authorizationHeader, String accountNumber) {
         try {
             ClientDto clientDto = userClient.getClient(authorizationHeader);
-            Account account = accountRepository.findByAccountNumber(accountNumber);
+            Account account = accountRepository.findByAccountNumber(accountNumber)
+                    .orElseThrow(AccountNotFoundException::new);
 
             if (!clientDto.getId().equals(account.getClientId()))
                 throw new ClientNotAccountOwnerException();
@@ -185,7 +184,8 @@ public class AccountService {
     public void getAccountTransactions(String authorizationHeader, String accountNumber) {
         try {
             ClientDto clientDto = userClient.getClient(authorizationHeader);
-            Account account = accountRepository.findByAccountNumber(accountNumber);
+            Account account = accountRepository.findByAccountNumber(accountNumber)
+                    .orElseThrow(AccountNotFoundException::new);
 
             if (!clientDto.getId().equals(account.getClientId()))
                 throw new ClientNotAccountOwnerException();

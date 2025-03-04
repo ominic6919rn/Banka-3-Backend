@@ -3,7 +3,6 @@ package rs.raf.bank_service.unit;
 import feign.FeignException;
 import feign.Request;
 import feign.RequestTemplate;
-import feign.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,7 +53,7 @@ public class AccountServiceTest {
 
     @BeforeEach
     void setUp() {
-        accountService = new AccountService(currencyRepository, accountRepository, userClient, userService);
+        accountService = new AccountService(currencyRepository, accountRepository, userClient);
     }
 
     @Test
@@ -315,7 +314,7 @@ public class AccountServiceTest {
         account.setAccountNumber("1");
         account.setClientId(clientDto.getId());
         account.setBalance(BigDecimal.TEN);
-        when(accountRepository.findByAccountNumber("1")).thenReturn(account);
+        when(accountRepository.findByAccountNumber("1")).thenReturn(Optional.of(account));
 
         AccountDetailsDto accountDetails = accountService.getAccountDetails("Bearer token", "1");
         assertNotNull(accountDetails);
@@ -344,7 +343,7 @@ public class AccountServiceTest {
         account.setAccountNumber("1");
         account.setClientId(99L);
         account.setBalance(BigDecimal.TEN);
-        when(accountRepository.findByAccountNumber("1")).thenReturn(account);
+        when(accountRepository.findByAccountNumber("1")).thenReturn(Optional.of(account));
 
         ClientNotAccountOwnerException exception = assertThrows(ClientNotAccountOwnerException.class, () ->
                 accountService.getAccountDetails("Bearer token", "1"));

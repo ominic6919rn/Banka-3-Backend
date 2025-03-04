@@ -79,6 +79,7 @@ public class AccountMapper {
                 BigDecimal.ZERO,
                 account.getBalance()
         );
+    }
 
     public AccountTypeDto toAccountTypeDto(Account account) {
         if (account == null) return null;

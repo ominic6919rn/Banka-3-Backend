@@ -4,13 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.Data;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-import lombok.Data;
-
 @Data
 public class CompanyDto {
     private Long id;
