@@ -26,9 +26,6 @@ import rs.raf.bank_service.exceptions.UserNotAClientException;
 import rs.raf.bank_service.repository.AccountRepository;
 import rs.raf.bank_service.repository.CurrencyRepository;
 import rs.raf.bank_service.service.AccountService;
-import rs.raf.bank_service.service.UserService;
-import rs.raf.bank_service.exceptions.ClientNotFoundException;
-import rs.raf.bank_service.exceptions.CurrencyNotFoundException;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -43,8 +40,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class AccountServiceTest {
 
-    @Mock
-    private UserService userService;
 
     @Mock
     private CurrencyRepository currencyRepository;
@@ -223,13 +218,13 @@ public class AccountServiceTest {
         newBankAccountDto.setIsActive("ACTIVE");
         newBankAccountDto.setAccountOwnerType("PERSONAL");
 
-        UserDto userDto = new UserDto();
-        userDto.setId(1L);
+        ClientDto clientDto = new ClientDto();
+        clientDto.setId(1L);
 
         Currency currency = new Currency();
         currency.setCode("EUR");
 
-        when(userService.getUserById(1L, "Bearer token")).thenReturn(userDto);
+        when(userClient.getClientById(1L)).thenReturn(clientDto);
         // Use eq() to match the exact "EUR" string.
         when(currencyRepository.findByCode("EUR")).thenReturn(Optional.of(currency));
 
@@ -245,7 +240,7 @@ public class AccountServiceTest {
         newBankAccountDto.setAccountType("PERSONAL");
         newBankAccountDto.setCurrency("USD");
 
-        when(userService.getUserById(999L, "Bearer token")).thenReturn(null);
+        when(userClient.getClientById(999L)).thenReturn(null);
 
         Exception exception = assertThrows(ClientNotFoundException.class, () -> {
             accountService.createNewBankAccount(newBankAccountDto, "Bearer token");
@@ -262,10 +257,10 @@ public class AccountServiceTest {
         newBankAccountDto.setAccountType("PERSONAL");
         newBankAccountDto.setCurrency("INVALID");
 
-        UserDto userDto = new UserDto();
-        userDto.setId(1L);
+        ClientDto clientDto = new ClientDto();
+        clientDto.setId(1L);
 
-        when(userService.getUserById(1L, "Bearer token")).thenReturn(userDto);
+        when(userClient.getClientById(1L)).thenReturn(clientDto);
         // Mark this stubbing as lenient to avoid unnecessary stubbing exception.
         lenient().when(currencyRepository.findByCode("INVALID")).thenReturn(Optional.empty());
 
